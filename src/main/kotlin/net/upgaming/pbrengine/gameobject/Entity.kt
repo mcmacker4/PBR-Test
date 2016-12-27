@@ -1,0 +1,30 @@
+package net.upgaming.pbrengine.gameobject
+
+import net.upgaming.pbrengine.models.Model
+import org.joml.Matrix4f
+import org.joml.Vector3f
+import org.lwjgl.system.MemoryUtil
+import java.nio.FloatBuffer
+
+
+class Entity(val model: Model, val position: Vector3f = Vector3f(), val rotation: Vector3f = Vector3f(), var scale: Float = 1f) {
+    
+    private val mmBuffer = MemoryUtil.memAllocFloat(16)
+    
+    fun getModelMatrixFB(): FloatBuffer {
+        mmBuffer.clear()
+        val matrix = Matrix4f()
+                .translate(position)
+                .rotate(rotation.x, 1f, 0f, 0f)
+                .rotate(rotation.y, 0f, 1f, 0f)
+                .rotate(rotation.z, 0f, 0f, 1f)
+                .scale(scale)
+        matrix.get(mmBuffer)
+        return mmBuffer
+    }
+    
+    fun delete() {
+        MemoryUtil.memFree(mmBuffer)
+    }
+    
+}
