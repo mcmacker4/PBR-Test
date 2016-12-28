@@ -40,7 +40,7 @@ open class Application(width: Int, height: Int, title: String = "PBR Engine") {
             
         }
         
-        Model.cleanUp()
+        Model.Loader.cleanUp()
         display.destroy()
         
     }

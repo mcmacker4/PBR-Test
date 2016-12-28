@@ -1,11 +1,20 @@
 #version 330 core
 
-in vec3 _pos;
+#define M_PI 3.1415926535897932384626433832795
+
+in vec3 _position;
+in vec3 _normal;
 
 out vec4 color;
 
-void main() {
+vec3 lightPos = vec3(3, 3, 3);
 
-    color = vec4(_pos.x + 0.5, _pos.y + 0.5, _pos.z + 0.5, 1.0);
+void main(void) {
 
+    vec3 normal = normalize(_normal);
+    vec3 toLight = normalize(lightPos - _position);
+    
+    float brightness = max(dot(normal, toLight), 0.0);
+    color = vec4(brightness, brightness, brightness, 1.0);
+    
 }

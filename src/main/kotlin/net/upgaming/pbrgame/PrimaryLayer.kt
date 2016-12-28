@@ -14,48 +14,34 @@ class PrimaryLayer : GraphicsLayer {
     
     val entityRenderer: EntityRenderer
     val model: Model
-    val entities = arrayListOf<Entity>()
+    val entity: Entity
     val camera: Camera
-    val modelData = Model.Data(
-            floatArrayOf(
-                    -1f, -1f, 0f,
-                    1f, -1f, 0f,
-                    0f, 1f, 0f
-            ),
-            floatArrayOf(
-                    0f, 0f, 1f,
-                    0f, 0f, 1f,
-                    0f, 0f, 1f
-            ),
-            floatArrayOf(
-                    0f, 1f,
-                    1f, 1f,
-                    0.5f, 0f
-            )
-    )
+//    val modelData = Model.Data(
+//            floatArrayOf(
+//                    -1f, -1f, 0f,
+//                    1f, -1f, 0f,
+//                    0f, 1f, 0f
+//            ),
+//            floatArrayOf(
+//                    0f, 0f, 1f,
+//                    0f, 0f, 1f,
+//                    0f, 0f, 1f
+//            ),
+//            floatArrayOf(
+//                    0f, 1f,
+//                    1f, 1f,
+//                    0.5f, 0f
+//            )
+//    )
     
     init {
-        model = Model.load(modelData)
-        
-        for(i in 0..100) {
-            entities.add(Entity(model,
-                    Vector3f(
-                            (Math.random() * 10 - 5).toFloat(),
-                            (Math.random() * 2 - 1).toFloat(),
-                            (Math.random() * 10 - 5).toFloat()
-                    ),
-                    Vector3f(0f, (Math.random() * Math.PI).toFloat(), 0f)
-            ))
-        }
-        
+        model = Model.OBJLoader.load("res/models/sphere.obj")
+        entity = Entity(model)
         entityRenderer = EntityRenderer(ShaderProgram.load("simple"))
-        camera = Camera(Vector3f(0f, 3f, 4f), Vector3f(-(Math.PI / 4).toFloat(), 0f, 0f))
+        camera = Camera(Vector3f(0f, 0f, 3f))
     }
     
     override fun update(delta: Float) {
-        entities.forEach {
-            it.rotation.add(0f, (2 * Math.PI * delta).toFloat(), 0f)
-        }
         if(PBRGame.isKeyDown(GLFW_KEY_W)) {
             camera.position.add(0f, 0f, -1f * delta)
         } else if(PBRGame.isKeyDown(GLFW_KEY_S)) {
@@ -69,7 +55,7 @@ class PrimaryLayer : GraphicsLayer {
     }
 
     override fun render() {
-        entityRenderer.pushAll(entities)
+        entityRenderer.push(entity)
         entityRenderer.draw(camera)
     }
     
