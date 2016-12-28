@@ -6,6 +6,7 @@ layout(location = 2) in vec2 texCoord;
 
 out vec3 _position;
 out vec3 _normal;
+out vec2 _texCoords;
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -17,6 +18,7 @@ void main() {
     gl_Position = projectionMatrix * viewMatrix * transformedPos;
     
     _position = transformedPos.xyz;
-    _normal = (modelMatrix * vec4(normal, 1.0)).xyz;
+    _normal = normal;
+    _texCoords = texCoord;
 
 }
