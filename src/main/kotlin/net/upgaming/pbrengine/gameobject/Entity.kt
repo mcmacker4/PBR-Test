@@ -1,5 +1,6 @@
 package net.upgaming.pbrengine.gameobject
 
+import net.upgaming.pbrengine.material.Material
 import net.upgaming.pbrengine.models.Model
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -7,7 +8,8 @@ import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 
 
-class Entity(val model: Model, val position: Vector3f = Vector3f(), val rotation: Vector3f = Vector3f(), var scale: Float = 1f) {
+class Entity(val model: Model, val material: Material = Material.default(), val position: Vector3f = Vector3f(),
+             val rotation: Vector3f = Vector3f(), var scale: Float = 1f) {
     
     private val mmBuffer = MemoryUtil.memAllocFloat(16)
     

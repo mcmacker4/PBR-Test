@@ -55,7 +55,7 @@ class Display(var width: Int, var height: Int, title: String) {
         
         glfwSwapInterval(0)
         
-        glClearColor(0.3f, 0.6f, 0.9f, 1f)
+        glClearColor(0f, 0f, 0f, 1f)
         glEnable(GL_DEPTH_TEST)
         
     }
