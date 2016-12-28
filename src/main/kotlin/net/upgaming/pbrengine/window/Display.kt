@@ -10,6 +10,14 @@ class Display(var width: Int, var height: Int, title: String) {
     
     val window: Long
     
+    var mouseDX = 0
+        private set
+    var mouseDY = 0
+        private set
+    
+    private var mouseX = 0
+    private var mouseY = 0
+    
     init {
         if(!glfwInit())
             throw IllegalStateException("Could not initialize GLFW")
@@ -40,6 +48,8 @@ class Display(var width: Int, var height: Int, title: String) {
             glViewport(0, 0, width, height)
         })
         
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED)
+        
         glfwMakeContextCurrent(window)
         GL.createCapabilities()
         
@@ -51,8 +61,21 @@ class Display(var width: Int, var height: Int, title: String) {
     }
     
     fun update() {
+        mouseUpdate()
         glfwSwapBuffers(window)
         glfwPollEvents()
+    }
+    
+    private fun mouseUpdate() {
+        val amx = DoubleArray(1)
+        val amy = DoubleArray(1)
+        glfwGetCursorPos(window, amx, amy)
+        val mx = amx[0].toInt()
+        val my = amy[0].toInt()
+        mouseDX = mx - mouseX
+        mouseDY = my - mouseY
+        mouseX = mx
+        mouseY = my
     }
     
     fun shouldClose(): Boolean {

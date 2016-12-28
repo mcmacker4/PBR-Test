@@ -22,6 +22,11 @@ class ShaderProgram(private val program: Int) {
         glUniform1f(loc, value)
     }
     
+    fun loadInt(varname: String, value: Int) {
+        val loc = glGetUniformLocation(program, varname)
+        glUniform1i(loc, value)
+    }
+    
     fun loadVector3f(varname: String, vec: Vector3f) {
         val loc = glGetUniformLocation(program, varname)
         glUniform3f(loc, vec.x, vec.y, vec.z)

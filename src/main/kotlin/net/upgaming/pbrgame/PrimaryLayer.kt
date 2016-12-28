@@ -5,7 +5,10 @@ import net.upgaming.pbrengine.gameobject.Entity
 import net.upgaming.pbrengine.graphics.GraphicsLayer
 import net.upgaming.pbrengine.graphics.EntityRenderer
 import net.upgaming.pbrengine.graphics.ShaderProgram
+import net.upgaming.pbrengine.graphics.SkyboxRenderer
 import net.upgaming.pbrengine.models.Model
+import net.upgaming.pbrengine.texture.TextureLoader
+import net.upgaming.pbrengine.texture.TextureSkybox
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW.*
 
@@ -13,50 +16,34 @@ import org.lwjgl.glfw.GLFW.*
 class PrimaryLayer : GraphicsLayer {
     
     val entityRenderer: EntityRenderer
+    val skyboxRenderer: SkyboxRenderer
     val model: Model
     val entity: Entity
     val camera: Camera
-//    val modelData = Model.Data(
-//            floatArrayOf(
-//                    -1f, -1f, 0f,
-//                    1f, -1f, 0f,
-//                    0f, 1f, 0f
-//            ),
-//            floatArrayOf(
-//                    0f, 0f, 1f,
-//                    0f, 0f, 1f,
-//                    0f, 0f, 1f
-//            ),
-//            floatArrayOf(
-//                    0f, 1f,
-//                    1f, 1f,
-//                    0.5f, 0f
-//            )
-//    )
+    val skyboxTexture: TextureSkybox
     
     init {
-        model = Model.OBJLoader.load("res/models/sphere.obj")
+        model = Model.OBJLoader.load("sphere")
         entity = Entity(model)
         entityRenderer = EntityRenderer(ShaderProgram.load("simple"))
         camera = Camera(Vector3f(0f, 0f, 3f))
+        skyboxTexture = TextureLoader.loadTextureSkybox("yokohama")
+        skyboxRenderer = SkyboxRenderer()
     }
     
     override fun update(delta: Float) {
-        if(PBRGame.isKeyDown(GLFW_KEY_W)) {
-            camera.position.add(0f, 0f, -1f * delta)
-        } else if(PBRGame.isKeyDown(GLFW_KEY_S)) {
-            camera.position.add(0f, 0f, 1f * delta)
-        }
-        if(PBRGame.isKeyDown(GLFW_KEY_A)) {
-            camera.position.add(-1f * delta, 0f, 0f)
-        } else if(PBRGame.isKeyDown(GLFW_KEY_D)) {
-            camera.position.add(1f * delta, 0f, 0f)
-        }
+        camera.update(delta)
     }
 
     override fun render() {
+        skyboxRenderer.render(camera, skyboxTexture)
         entityRenderer.push(entity)
-        entityRenderer.draw(camera)
+        entityRenderer.draw(camera, skyboxTexture)
+    }
+    
+    override fun cleanUp() {
+        camera.delete()
+        entity.delete()
     }
     
 }

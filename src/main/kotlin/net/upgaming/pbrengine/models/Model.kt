@@ -27,6 +27,14 @@ class Model(val vao: Int, val vertexCount: Int) {
             glBindVertexArray(0)
             return Model(vao, data.vertices.size / 3)
         }
+        
+        fun loadVerticesOnly(vertices: FloatArray): Model {
+            val vao = createVAO()
+            glBindVertexArray(vao)
+            storeDataInAttributeArray(0, 3, vertices)
+            glBindVertexArray(0)
+            return Model(vao, vertices.size / 3)
+        }
 
         private fun storeDataInAttributeArray(index: Int, size: Int, data: FloatArray) {
             val buffer = data.toFloatBuffer()
@@ -66,8 +74,9 @@ class Model(val vao: Int, val vertexCount: Int) {
         val ordNormals = arrayListOf<Vector3f>()
         val ordTexCoords = arrayListOf<Vector2f>()
         
-        fun load(path: String): Model {
+        fun load(name: String): Model {
             clear()
+            val path = "res/models/$name.obj"
             File(path).forEachLine {
                 val parts = it.split(" ")
                 when {

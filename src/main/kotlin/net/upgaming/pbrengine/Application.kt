@@ -40,6 +40,8 @@ open class Application(width: Int, height: Int, title: String = "PBR Engine") {
             
         }
         
+        cleanUp()
+        
         Model.Loader.cleanUp()
         display.destroy()
         
@@ -54,9 +56,16 @@ open class Application(width: Int, height: Int, title: String = "PBR Engine") {
         graphicsLayers.forEach { it.render() }
     }
     
+    private fun cleanUp() {
+        graphicsLayers.forEach { it.cleanUp() }
+    }
+    
     fun pushLayer(layer: GraphicsLayer) = graphicsLayers.add(layer)
     
     fun isKeyDown(glfwKey: Int) = display.isKeyDown(glfwKey)
     fun isBtnDown(glfwBtn: Int) = display.isBtnDown(glfwBtn)
+    
+    fun getMouseDX(): Int = display.mouseDX
+    fun getMouseDY(): Int = display.mouseDY
     
 }

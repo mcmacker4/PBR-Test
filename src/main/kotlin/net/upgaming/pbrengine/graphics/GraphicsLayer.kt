@@ -5,5 +5,7 @@ interface GraphicsLayer {
     
     fun update(delta: Float)
     fun render()
+
+    fun cleanUp()
     
 }

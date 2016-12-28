@@ -11,13 +11,12 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-uniform float roughness;
-
 void main() {
 
-    vec4 tpos = modelMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * viewMatrix * tpos;
-    _position = tpos.xyz;
+    vec4 transformedPos = modelMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * transformedPos;
+    
+    _position = transformedPos.xyz;
     _normal = (modelMatrix * vec4(normal, 1.0)).xyz;
 
 }

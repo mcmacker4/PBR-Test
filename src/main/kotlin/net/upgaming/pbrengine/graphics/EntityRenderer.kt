@@ -2,7 +2,9 @@ package net.upgaming.pbrengine.graphics
 
 import net.upgaming.pbrengine.gameobject.Camera
 import net.upgaming.pbrengine.gameobject.Entity
+import net.upgaming.pbrengine.texture.TextureSkybox
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.*
 import org.lwjgl.opengl.GL30.*
 
 
@@ -18,11 +20,16 @@ class EntityRenderer(val shader: ShaderProgram) {
         entityQueue.addAll(entities)
     }
     
-    fun draw(camera: Camera) {
+    fun draw(camera: Camera, skybox: TextureSkybox) {
         
         shader.start()
         shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB())
         shader.loadMatrix4f("viewMatrix", camera.getViewMatrixFB())
+        shader.loadInt("skybox", 0)
+        shader.loadVector3f("campos", camera.position)
+        
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.id)
         
         val it = entityQueue.iterator()
         while(it.hasNext()) {
