@@ -1,3 +1,4 @@
+#shader vertex
 #version 330 core
 
 layout (location = 0) in vec3 position;
@@ -12,4 +13,16 @@ void main(void) {
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
     texCoords = position;
 
+}
+
+#shader fragment
+#version 330 core
+
+in vec3 texCoords;
+out vec4 color;
+
+uniform samplerCube skybox;
+
+void main(void) {
+    color = texture(skybox, texCoords);
 }

@@ -22,35 +22,23 @@ class PrimaryLayer : GraphicsLayer {
     val sphereEntities = arrayListOf<Entity>()
     val camera: Camera
     val skyboxTexYoko: TextureSkybox
-    val pointLights = arrayListOf<PointLight>()
     
     init {
         sphereModel = Model.OBJLoader.load("sphere")
         
-        for(x in 0 until 10) {
-            for(y in 0..1) {
-                
-                val material = Material(Vector3f(1f, 0f, 0f), x / 10f, y.toFloat())
-                sphereEntities.add(Entity(
-                        sphereModel,
-                        material,
-                        Vector3f(x.toFloat() - 4.5f, y.toFloat() - 0.5f, 0f),
-                        scale = 0.5f
-                ))
-                
-            }
+        val color = Vector3f(0.6f, 0.6f, 0.6f)
+        for(i in 1..10) {
+            sphereEntities.add(Entity(
+                    sphereModel,
+                    Material(color, i / 10.0f, 0f),
+                    Vector3f(i * 2.5f - 6, 0f, 0f)
+            ))
         }
         
         entityRenderer = EntityRenderer(ShaderProgram.load("simple"))
         camera = Camera(Vector3f(0f, 0f, 3f))
-        skyboxTexYoko = TextureLoader.loadTextureSkybox("yokohama")
+        skyboxTexYoko = TextureLoader.loadTextureSkybox("sea")
         skyboxRenderer = SkyboxRenderer()
-        
-        pointLights.add(PointLight(Vector3f(-4f, -4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(-4f, 4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(4f, 4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(4f, -4f, 10f), Vector3f(1f)))
-        
     }
     
     override fun update(delta: Float) {
@@ -58,9 +46,8 @@ class PrimaryLayer : GraphicsLayer {
     }
 
     override fun render() {
-        //skyboxRenderer.render(camera, skyboxTexYoko)
+        skyboxRenderer.render(camera, skyboxTexYoko)
         
-        entityRenderer.addPointLights(pointLights)
         entityRenderer.pushAll(sphereEntities)
         entityRenderer.draw(camera, skyboxTexYoko)
     }
@@ -68,6 +55,7 @@ class PrimaryLayer : GraphicsLayer {
     override fun cleanUp() {
         camera.delete()
         sphereEntities.forEach(Entity::delete)
+        entityRenderer.shader.delete()
     }
     
 }

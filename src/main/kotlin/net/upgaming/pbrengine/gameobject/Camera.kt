@@ -16,12 +16,18 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
     private val vMatUtBuffer = MemoryUtil.memAllocFloat(16)
     private val pMatBuffer = MemoryUtil.memAllocFloat(16)
     
+    private val viewMatrix = Matrix4f()
+    private val projectionMatrix = Matrix4f()
+    private val tempMatrix = Matrix3f()
+    
     private val sensitivity = 0.002f
-    private val speed = 1f
+    private val speed = 3f
+    
+    private val change = Vector3f()
 
     fun update(delta: Float) {
         
-        val change = Vector3f()
+        change.set(0f)
         
         if(PBRGame.isKeyDown(GLFW_KEY_W)) {
             change.add(frontVector())
@@ -49,17 +55,17 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
     }
     
     private fun frontVector(): Vector3f {
-        val mat = Matrix3f().rotateY(rotation.y)
-        return Vector3f(0f, 0f, -1f).mul(mat).normalize()
+        val mat = tempMatrix.identity().rotateY(rotation.y)
+        return Vector3f(0f, 0f, -1f).mul(tempMatrix).normalize()
     }
     
     private fun leftVector(): Vector3f {
-        val mat = Matrix3f().rotateY(rotation.y + (Math.PI / 2).toFloat())
+        val mat = tempMatrix.identity().rotateY(rotation.y + (Math.PI / 2).toFloat())
         return Vector3f(0f, 0f, -1f).mul(mat).normalize()
     }
     
     private fun rightVector(): Vector3f {
-        val mat = Matrix3f().rotateY(rotation.y + (-Math.PI / 2).toFloat())
+        val mat = tempMatrix.identity().rotateY(rotation.y + (-Math.PI / 2).toFloat())
         return Vector3f(0f, 0f, -1f).mul(mat).normalize()
     }
     
@@ -72,7 +78,7 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
     }
     
     fun getViewMatrixUntranslated(): Matrix4f {
-        return Matrix4f()
+        return viewMatrix.identity()
                 .rotate(-rotation.x, 1f, 0f, 0f)
                 .rotate(-rotation.y, 0f, 1f, 0f)
                 .rotate(-rotation.z, 0f, 0f, 1f)
@@ -93,7 +99,7 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
     }
     
     fun getProjectionMatrix(): Matrix4f {
-        return Matrix4f().setPerspective(
+        return projectionMatrix.setPerspective(
                 Math.toRadians(fov.toDouble()).toFloat(),
                 PBRGame.display.width / PBRGame.display.height.toFloat(),
                 0.1f, 1000f

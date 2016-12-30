@@ -12,16 +12,17 @@ class Entity(val model: Model, val material: Material = Material.default(), val 
              val rotation: Vector3f = Vector3f(), var scale: Float = 1f) {
     
     private val mmBuffer = MemoryUtil.memAllocFloat(16)
+    private val modelMatrix = Matrix4f()
     
     fun getModelMatrixFB(): FloatBuffer {
         mmBuffer.clear()
-        val matrix = Matrix4f()
+        modelMatrix.identity()
                 .translate(position)
                 .rotate(rotation.x, 1f, 0f, 0f)
                 .rotate(rotation.y, 0f, 1f, 0f)
                 .rotate(rotation.z, 0f, 0f, 1f)
                 .scale(scale)
-        matrix.get(mmBuffer)
+        modelMatrix.get(mmBuffer)
         return mmBuffer
     }
     

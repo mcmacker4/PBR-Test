@@ -44,9 +44,27 @@ class ShaderProgram(private val program: Int) {
     companion object {
         
         fun load(name: String): ShaderProgram {
-            val vsrc = Files.readAllLines(File("res/shaders/$name.v.glsl").toPath()).joinToString("\n")
-            val fsrc = Files.readAllLines(File("res/shaders/$name.f.glsl").toPath()).joinToString("\n")
-            return load(vsrc, fsrc)
+            
+            val sources = hashMapOf<String, String>()
+            
+            var currentShader = ""
+            var currentSrc = ""
+            
+            Files.lines(File("res/shaders/$name.glsl").toPath()).forEach { 
+                if(it.startsWith("#shader")) {
+                    if(!currentShader.isEmpty())
+                        sources.put(currentShader, currentSrc)
+                    currentShader = it.split(" ")[1]
+                    currentSrc = String()
+                } else {
+                    currentSrc += it + "\n"
+                }
+            }
+            
+            if(!currentShader.isEmpty())
+                sources.put(currentShader, currentSrc)
+            
+            return load(sources["vertex"]!!, sources["fragment"]!!)
         }
         
         fun load(vsrc: String, fsrc: String): ShaderProgram {

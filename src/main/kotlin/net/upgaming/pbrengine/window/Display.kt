@@ -3,6 +3,7 @@ package net.upgaming.pbrengine.window
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.system.MemoryUtil
 import org.lwjgl.system.MemoryUtil.NULL
 
 
@@ -67,15 +68,13 @@ class Display(var width: Int, var height: Int, title: String) {
     }
     
     private fun mouseUpdate() {
-        val amx = DoubleArray(1)
-        val amy = DoubleArray(1)
-        glfwGetCursorPos(window, amx, amy)
-        val mx = amx[0].toInt()
-        val my = amy[0].toInt()
-        mouseDX = mx - mouseX
-        mouseDY = my - mouseY
-        mouseX = mx
-        mouseY = my
+        val arrayX = DoubleArray(1)
+        val arrayY = DoubleArray(1)
+        glfwGetCursorPos(window, arrayX, arrayY)
+        mouseDX = (arrayX[0] - mouseX).toInt()
+        mouseDY = Math.floor(arrayY[0] - mouseY).toInt()
+        mouseX = arrayX[0].toInt()
+        mouseY = arrayY[0].toInt()
     }
     
     fun shouldClose(): Boolean {
