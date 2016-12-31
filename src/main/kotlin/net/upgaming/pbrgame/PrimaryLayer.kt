@@ -26,8 +26,8 @@ class PrimaryLayer : GraphicsLayer {
     init {
         sphereModel = Model.OBJLoader.load("sphere")
         
-        val color = Vector3f(0.6f, 0.6f, 0.6f)
-        for(i in 1..10) {
+        val color = Vector3f(0.9f, 0f, 0f)
+        for(i in 0..10) {
             sphereEntities.add(Entity(
                     sphereModel,
                     Material(color, i / 10.0f, 0f),
@@ -42,6 +42,7 @@ class PrimaryLayer : GraphicsLayer {
     }
     
     override fun update(delta: Float) {
+        PBRGame.display.setTitle(PBRGame.timer.FPS.toString())
         camera.update(delta)
     }
 

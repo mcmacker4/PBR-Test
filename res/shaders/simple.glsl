@@ -51,7 +51,7 @@ uniform struct PointLight {
     vec3 color;
 } pointLights[4];
 
-const uint NumSamples = 128u;
+const uint NumSamples = 32u;
 
 
 //vec3 fresnelSchlick(float cosTheta, float roughness, vec3 F0) {
@@ -156,7 +156,7 @@ vec2 IntegrateBRDF( float roughness, float NoV, vec3 N ) {
 
 vec3 ApproximateSpecularIBL( vec3 SpecularColor , float Roughness, vec3 N, vec3 V ) {
     float NoV = clamp( dot( N, V ), 0.0, 1.0 );
-    vec3 R = 2 * dot( V, N ) * N - V;
+    vec3 R = 2 * NoV * N - V;
     vec3 PrefilteredColor = PrefilterEnvMap( Roughness, R );
     vec2 EnvBRDF = IntegrateBRDF( Roughness, NoV, N );
     return PrefilteredColor * ( SpecularColor * EnvBRDF.x + EnvBRDF.y );

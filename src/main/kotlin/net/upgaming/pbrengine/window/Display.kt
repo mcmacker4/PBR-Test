@@ -77,6 +77,10 @@ class Display(var width: Int, var height: Int, title: String) {
         mouseY = arrayY[0].toInt()
     }
     
+    fun setTitle(title: String) {
+        glfwSetWindowTitle(window, title)
+    }
+    
     fun shouldClose(): Boolean {
         return glfwWindowShouldClose(window)
     }
