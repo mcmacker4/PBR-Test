@@ -18,7 +18,7 @@ void main() {
     gl_Position = projectionMatrix * viewMatrix * transformedPos;
     
     _position = transformedPos.xyz;
-    _normal = normal;
+    _normal = (modelMatrix * vec4(normal, 0.0)).xyz;
     _texCoords = texCoord;
 
 }

@@ -9,12 +9,17 @@ in vec2 _texCoords;
 out vec4 FragColor;
 
 uniform samplerCube skybox;
+
 uniform vec3 cameraPos;
 
 uniform struct Material {
     vec3 color;
     float roughness;
     float metallic;
+    float useAlbedo;
+    float useNormalMap;
+    sampler2D albedo;
+    sampler2D normalMap;
 } material;
 
 uniform struct PointLight {
@@ -63,10 +68,17 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 void main(void) {
 
     vec3 N = normalize(_normal);
+    if(material.useAlbedo > 0.5)
+        N = normalize(texture(material.normalMap, _texCoords).xyz * 2.0 - 1.0);
+    
     vec3 V = normalize(cameraPos - _position);
     
+    vec3 matcolor = material.color;
+    if(material.useAlbedo > 0.5)
+        matcolor = texture(material.albedo, _texCoords).xyz;
+    
     vec3 F0 = vec3(0.04);
-    F0 = mix(F0, material.color, material.metallic);
+    F0 = mix(F0, matcolor, material.metallic);
     vec3 F = fresnelSchlick(max(dot(N, V), 0.0), F0, material.roughness);
     
     vec3 kS = F;
@@ -92,15 +104,15 @@ void main(void) {
         vec3 brdf = nominator / denominator;
         
         float NdotL = max(dot(N, L), 0.0);
-        Lo += (kD  * material.color / M_PI + brdf) * radiance * NdotL;
+        Lo += (kD  * matcolor / M_PI + brdf) * radiance * NdotL;
         
     }
     
-    vec3 ambient = vec3(0.03) * material.color;
+    vec3 ambient = vec3(0.03) * matcolor;
     vec3 color = ambient + Lo;
     
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2)); 
+//    color = color / (color + vec3(1.0));
+//    color = pow(color, vec3(1.0/2.2)); 
     
     FragColor = vec4(color, 1.0);
 }

@@ -16,6 +16,11 @@ class ShaderProgram(private val program: Int) {
     fun stop() {
         glUseProgram(program)
     }
+
+    fun loadBoolean(varname: String, value: Boolean) {
+        val loc = glGetUniformLocation(program, varname)
+        glUniform1f(loc, if(value) 1f else 0f)
+    }
     
     fun loadFloat(varname: String, value: Float) {
         val loc = glGetUniformLocation(program, varname)
@@ -76,5 +81,5 @@ class ShaderProgram(private val program: Int) {
         }
 
     }
-    
+
 }

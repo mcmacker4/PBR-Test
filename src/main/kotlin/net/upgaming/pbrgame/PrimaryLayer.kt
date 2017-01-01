@@ -18,56 +18,55 @@ class PrimaryLayer : GraphicsLayer {
     
     val entityRenderer: EntityRenderer
     val skyboxRenderer: SkyboxRenderer
-    val sphereModel: Model
-    val sphereEntities = arrayListOf<Entity>()
+    val planeModel: Model
+    val planeEntity: Entity
     val camera: Camera
     val skyboxTexYoko: TextureSkybox
-    val pointLights = arrayListOf<PointLight>()
+    val pointLight: PointLight
     
     init {
-        sphereModel = Model.OBJLoader.load("sphere")
+        planeModel = Model.OBJLoader.load("plane")
         
-        for(x in 0 until 10) {
-            for(y in 0..1) {
-                
-                val material = Material(Vector3f(1f, 0f, 0f), x / 10f, y.toFloat())
-                sphereEntities.add(Entity(
-                        sphereModel,
-                        material,
-                        Vector3f(x.toFloat() - 4.5f, y.toFloat() - 0.5f, 0f),
-                        scale = 0.5f
-                ))
-                
-            }
-        }
+        planeEntity = Entity(
+                planeModel,
+                Material(
+                        Vector3f(),
+                        0.8f, 0f,
+                        TextureLoader.loadTexture2D("brickwall", "jpg"),
+                        TextureLoader.loadTexture2D("brickwall_normal", "jpg")
+                ), rotation = Vector3f(Math.PI.toFloat() / 2, 0f, 0f)
+        )
         
         entityRenderer = EntityRenderer(ShaderProgram.load("simple"))
         camera = Camera(Vector3f(0f, 0f, 3f))
         skyboxTexYoko = TextureLoader.loadTextureSkybox("yokohama")
         skyboxRenderer = SkyboxRenderer()
         
-        pointLights.add(PointLight(Vector3f(-4f, -4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(-4f, 4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(4f, 4f, 10f), Vector3f(1f)))
-        pointLights.add(PointLight(Vector3f(4f, -4f, 10f), Vector3f(1f)))
+        pointLight = PointLight(Vector3f(0f, 0f, 4f), Vector3f(0.8f))
         
     }
     
+    var counter = 0.0
     override fun update(delta: Float) {
         camera.update(delta)
+        counter += Math.PI * delta
+        pointLight.position.set(
+                Math.cos(counter).toFloat(),
+                Math.sin(counter).toFloat(),
+                3f
+        )
     }
 
     override fun render() {
         //skyboxRenderer.render(camera, skyboxTexYoko)
         
-        entityRenderer.addPointLights(pointLights)
-        entityRenderer.pushAll(sphereEntities)
+        entityRenderer.addPointLight(pointLight)
+        entityRenderer.push(planeEntity)
         entityRenderer.draw(camera, skyboxTexYoko)
     }
     
     override fun cleanUp() {
         camera.delete()
-        sphereEntities.forEach(Entity::delete)
     }
     
 }

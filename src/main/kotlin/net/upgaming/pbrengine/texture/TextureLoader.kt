@@ -12,9 +12,12 @@ import javax.imageio.ImageIO
 
 object TextureLoader {
     
-    fun loadTexture2D(name: String): Texture2D {
+    val emptyTexture2D = Texture2D(0)
+    val emptyTextureSkybox = TextureSkybox(0)
+    
+    fun loadTexture2D(name: String, format: String = "png"): Texture2D {
         
-        val image = ImageIO.read(File("res/textures/$name.png"))
+        val image = ImageIO.read(File("res/textures/$name.$format"))
         val buffer = toBuffer(image)
         
         val texID = glGenTextures()

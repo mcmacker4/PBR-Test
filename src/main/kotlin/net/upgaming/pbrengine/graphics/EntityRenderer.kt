@@ -54,7 +54,19 @@ class EntityRenderer(val shader: ShaderProgram) {
             shader.loadVector3f("material.color", entity.material.color)
             shader.loadFloat("material.roughness", entity.material.roughness)
             shader.loadFloat("material.metallic", entity.material.metallic)
+            shader.loadBoolean("material.useAlbedo", entity.material.useAlbedo())
+            shader.loadBoolean("material.useNormalMap", entity.material.useNormalMap())
             shader.loadMatrix4f("modelMatrix", entity.getModelMatrixFB())
+            if(entity.material.useAlbedo()) {
+                shader.loadInt("material.albedo", 1)
+                glActiveTexture(GL_TEXTURE1)
+                glBindTexture(GL_TEXTURE_2D, entity.material.albedo.id)
+            }
+            if(entity.material.useNormalMap()) {
+                shader.loadInt("material.normalMap", 2)
+                glActiveTexture(GL_TEXTURE2)
+                glBindTexture(GL_TEXTURE_2D, entity.material.normalMap.id)
+            }
             draw(entity)
             it.remove()
         }

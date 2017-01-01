@@ -97,7 +97,7 @@ class Model(val vao: Int, val vertexCount: Int) {
                     it.startsWith("vt ") -> {
                         texCoords.add(Vector2f(
                                 parts[1].toFloat(),
-                                parts[2].toFloat()
+                                1f - parts[2].toFloat()
                         ))
                     }
                     it.startsWith("f ") -> {
