@@ -3,8 +3,8 @@ package net.upgaming.pbrengine.graphics
 import net.upgaming.pbrengine.gameobject.Camera
 import net.upgaming.pbrengine.gameobject.Entity
 import net.upgaming.pbrengine.lights.PointLight
+import net.upgaming.pbrengine.texture.TextureLoader
 import net.upgaming.pbrengine.texture.TextureSkybox
-import org.joml.Vector3f
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.*
 import org.lwjgl.opengl.GL30.*
@@ -13,7 +13,7 @@ import java.util.*
 
 class EntityRenderer(val shader: ShaderProgram) : LinkedList<Entity>() {
     
-    fun draw(camera: Camera, pointLights: List<PointLight>, skybox: TextureSkybox) {
+    fun draw(camera: Camera, pointLights: List<PointLight>, skybox: TextureSkybox = TextureLoader.NULL_TEXTURE_SKYBOX) {
         
         shader.start()
         shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB())

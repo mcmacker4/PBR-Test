@@ -6,11 +6,15 @@ import org.lwjgl.opengl.GL13.*
 import org.lwjgl.system.MemoryUtil
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.IOException
 import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 
 
 object TextureLoader {
+
+    val NULL_TEXTURE_2D = Texture2D(0)
+    val NULL_TEXTURE_SKYBOX = TextureSkybox(0)
     
     fun loadTexture2D(name: String): Texture2D {
         
@@ -37,7 +41,7 @@ object TextureLoader {
     
     private val faces = arrayOf("right", "left", "top", "bottom", "back", "front")
     
-    fun loadTextureSkybox(name: String): TextureSkybox {
+    fun loadTextureSkybox(name: String, format: String = "png"): TextureSkybox {
         
         val folder = "res/textures/skyboxes/$name/"
         
@@ -45,9 +49,13 @@ object TextureLoader {
         glBindTexture(GL_TEXTURE_CUBE_MAP, texID)
         
         for(i in 0..5) {
-            val image = ImageIO.read(File(folder + faces[i] + ".png"))
-            val buffer = toBuffer(image)
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            try {
+                val image = ImageIO.read(File(folder + faces[i] + "." + format))
+                val buffer = toBuffer(image)
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA8, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            } catch(ex: IOException) {
+                throw Exception(ex.message + " " + folder + faces[i] + ".png")
+            }
         }
         
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR)

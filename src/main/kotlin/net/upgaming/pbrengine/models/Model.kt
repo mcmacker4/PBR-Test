@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.*
 import java.io.File
-import java.nio.file.Files
 
 
 open class Model(val vao: Int, val vertexCount: Int) {
