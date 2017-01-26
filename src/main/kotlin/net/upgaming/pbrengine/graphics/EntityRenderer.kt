@@ -8,30 +8,12 @@ import org.joml.Vector3f
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.*
 import org.lwjgl.opengl.GL30.*
+import java.util.*
 
 
-class EntityRenderer(val shader: ShaderProgram) {
+class EntityRenderer(val shader: ShaderProgram) : LinkedList<Entity>() {
     
-    private val entityQueue = arrayListOf<Entity>()
-    private val pointLights = arrayListOf<PointLight>()
-    
-    fun push(entity: Entity) {
-        entityQueue.add(entity)
-    }
-
-    fun pushAll(entities: List<Entity>) {
-        entityQueue.addAll(entities)
-    }
-    
-    fun addPointLights(lights: List<PointLight>) {
-        pointLights.addAll(lights)
-    }
-    
-    fun addPointLight(light: PointLight) {
-        pointLights.add(light)
-    }
-    
-    fun draw(camera: Camera, skybox: TextureSkybox) {
+    fun draw(camera: Camera, pointLights: List<PointLight>, skybox: TextureSkybox) {
         
         shader.start()
         shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB())
@@ -48,7 +30,7 @@ class EntityRenderer(val shader: ShaderProgram) {
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.id)
         
-        val it = entityQueue.iterator()
+        val it = iterator()
         while(it.hasNext()) {
             val entity = it.next()
             shader.loadVector3f("material.color", entity.material.color)
@@ -65,7 +47,7 @@ class EntityRenderer(val shader: ShaderProgram) {
     
     private fun draw(entity: Entity) {
         glBindVertexArray(entity.model.vao)
-        glDrawArrays(GL_TRIANGLES, 0, entity.model.vertexCount)
+        glDrawElements(GL_TRIANGLES, entity.model.vertexCount, GL_UNSIGNED_INT, 0)
         glBindVertexArray(0)
     }
 

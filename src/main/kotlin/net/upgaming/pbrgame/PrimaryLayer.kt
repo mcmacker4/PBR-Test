@@ -60,9 +60,9 @@ class PrimaryLayer : GraphicsLayer {
     override fun render() {
         //skyboxRenderer.render(camera, skyboxTexYoko)
         
-        entityRenderer.addPointLights(pointLights)
-        entityRenderer.pushAll(sphereEntities)
-        entityRenderer.draw(camera, skyboxTexYoko)
+        for(entity in sphereEntities) 
+            entityRenderer.push(entity)
+        entityRenderer.draw(camera, pointLights, skyboxTexYoko)
     }
     
     override fun cleanUp() {

@@ -1,6 +1,7 @@
 package net.upgaming.pbrengine.models
 
 import net.upgaming.pbrengine.util.toFloatBuffer
+import net.upgaming.pbrengine.util.toIntBuffer
 import org.joml.Vector2f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL11.*
@@ -11,7 +12,7 @@ import java.io.File
 import java.nio.file.Files
 
 
-class Model(val vao: Int, val vertexCount: Int) {
+open class Model(val vao: Int, val vertexCount: Int) {
 
     object Loader {
 
@@ -21,11 +22,12 @@ class Model(val vao: Int, val vertexCount: Int) {
         fun load(data: Data): Model {
             val vao = createVAO()
             glBindVertexArray(vao)
+            storeIndices(data.indices)
             storeDataInAttributeArray(0, 3, data.vertices)
             storeDataInAttributeArray(1, 3, data.normals)
             storeDataInAttributeArray(2, 2, data.texCoords)
             glBindVertexArray(0)
-            return Model(vao, data.vertices.size / 3)
+            return Model(vao, data.indices.size)
         }
         
         fun loadVerticesOnly(vertices: FloatArray): Model {
@@ -34,6 +36,13 @@ class Model(val vao: Int, val vertexCount: Int) {
             storeDataInAttributeArray(0, 3, vertices)
             glBindVertexArray(0)
             return Model(vao, vertices.size / 3)
+        }
+        
+        private fun storeIndices(indices: IntArray) {
+            val buffer = indices.toIntBuffer()
+            val vbo = createVBO()
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo)
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         }
 
         private fun storeDataInAttributeArray(index: Int, size: Int, data: FloatArray) {
@@ -70,9 +79,8 @@ class Model(val vao: Int, val vertexCount: Int) {
         val vertices = arrayListOf<Vector3f>()
         val normals = arrayListOf<Vector3f>()
         val texCoords = arrayListOf<Vector2f>()
-        val ordVertices = arrayListOf<Vector3f>()
-        val ordNormals = arrayListOf<Vector3f>()
-        val ordTexCoords = arrayListOf<Vector2f>()
+        
+        val sIndices = arrayListOf<String>()
         
         fun load(name: String): Model {
             clear()
@@ -101,47 +109,44 @@ class Model(val vao: Int, val vertexCount: Int) {
                         ))
                     }
                     it.startsWith("f ") -> {
-                        for(i in 1..3) {
-                            val ind = parts[i].split("/")
-                            ordVertices.add(vertices[ind[0].toInt() - 1])
-                            ordNormals.add(normals[ind[2].toInt() - 1])
-                            ordTexCoords.add(texCoords[ind[1].toInt() - 1])
-                        }
+                        (1..3).mapTo(sIndices) { parts[it] }
                     }
                 }
             }
-            val verticesArray = FloatArray(ordVertices.size * 3)
-            val normalsArray = FloatArray(ordNormals.size * 3)
-            val texCoordsArray = FloatArray(ordTexCoords.size * 2)
-            var count = 0
-            ordVertices.forEach {
-                verticesArray[count++] = it.x
-                verticesArray[count++] = it.y
-                verticesArray[count++] = it.z
+
+            val verticesArray = FloatArray(vertices.size * 3)
+            val normalsArray = FloatArray(normals.size * 3)
+            val texCoordsArray = FloatArray(texCoords.size * 2)
+            val indices = arrayListOf<Int>()
+            
+            for(s in sIndices) {
+                val parts = s.split("/")
+                val index = parts[0].toInt() - 1
+                indices.add(index)
+                verticesArray[index*3] = vertices[index].x
+                verticesArray[index*3+1] = vertices[index].y
+                verticesArray[index*3+2] = vertices[index].z
+                val nIndex = parts[2].toInt() - 1
+                normalsArray[index*3] = normals[nIndex].x
+                normalsArray[index*3+1] = normals[nIndex].y
+                normalsArray[index*3+2] = normals[nIndex].z
+                val tIndex = parts[1].toInt() - 1
+                texCoordsArray[index*2] = texCoords[tIndex].x
+                texCoordsArray[index*2+1] = 1 - texCoords[tIndex].y
             }
-            count = 0
-            ordNormals.forEach { 
-                normalsArray[count++] = it.x
-                normalsArray[count++] = it.y
-                normalsArray[count++] = it.z
-            }
-            count = 0
-            ordTexCoords.forEach { 
-                texCoordsArray[count++] = it.x
-                texCoordsArray[count++] = it.y
-            }
-            return Model.Loader.load(Data(verticesArray, normalsArray, texCoordsArray))
+            
+            return Model.Loader.load(Data(verticesArray, normalsArray, texCoordsArray, indices.toIntArray()))
         }
         
         private fun clear() {
             vertices.clear()
             normals.clear()
-            ordVertices.clear()
-            ordNormals.clear()
+            texCoords.clear()
+            sIndices.clear()
         }
         
     }
 
-    class Data(val vertices: FloatArray, val normals: FloatArray, val texCoords: FloatArray)
+    class Data(val vertices: FloatArray, val normals: FloatArray, val texCoords: FloatArray, val indices: IntArray)
 
 }
