@@ -16,9 +16,11 @@ object TextureLoader {
     val NULL_TEXTURE_2D = Texture2D(0)
     val NULL_TEXTURE_SKYBOX = TextureSkybox(0)
     
-    fun loadTexture2D(name: String): Texture2D {
-        
-        val image = ImageIO.read(File("res/textures/$name.png"))
+    fun loadTexture2D(name: String, extension: String = "png"): Texture2D {
+
+        val image = ImageIO.read(
+                ClassLoader.getSystemClassLoader().getResourceAsStream("textures/$name.$extension")
+        )
         val buffer = toBuffer(image)
         
         val texID = glGenTextures()

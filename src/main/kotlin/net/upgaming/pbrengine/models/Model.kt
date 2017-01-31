@@ -83,8 +83,8 @@ open class Model(val vao: Int, val vertexCount: Int) {
         
         fun load(name: String): Model {
             clear()
-            val path = "res/models/$name.obj"
-            File(path).forEachLine {
+            ClassLoader.getSystemClassLoader()
+                    .getResourceAsStream("models/$name.obj").bufferedReader().forEachLine {
                 val parts = it.split(" ")
                 when {
                     it.startsWith("v ") -> {

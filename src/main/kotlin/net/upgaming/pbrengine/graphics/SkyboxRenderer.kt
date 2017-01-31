@@ -3,6 +3,7 @@ package net.upgaming.pbrengine.graphics
 import net.upgaming.pbrengine.gameobject.Camera
 import net.upgaming.pbrengine.models.Model
 import net.upgaming.pbrengine.texture.TextureSkybox
+import net.upgaming.pbrengine.window.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.*
 import org.lwjgl.opengl.GL30.*
@@ -57,11 +58,11 @@ class SkyboxRenderer {
         model = Model.Loader.loadVerticesOnly(vertices)
     }
     
-    fun render(camera: Camera, skybox: TextureSkybox) {
+    fun render(camera: Camera, display: Display, skybox: TextureSkybox) {
         glDepthMask(false)
         glDisable(GL_CULL_FACE)
         shader.start()
-        shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB())
+        shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB(display.ratio()))
         shader.loadMatrix4f("viewMatrix", camera.getViewMatrixUntranslatedFB())
         shader.loadInt("skybox", 0)
         glActiveTexture(GL_TEXTURE0)

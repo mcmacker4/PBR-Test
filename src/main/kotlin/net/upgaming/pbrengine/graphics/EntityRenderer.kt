@@ -5,6 +5,7 @@ import net.upgaming.pbrengine.gameobject.Entity
 import net.upgaming.pbrengine.lights.PointLight
 import net.upgaming.pbrengine.texture.TextureLoader
 import net.upgaming.pbrengine.texture.TextureSkybox
+import net.upgaming.pbrengine.window.Display
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.*
 import org.lwjgl.opengl.GL30.*
@@ -13,10 +14,10 @@ import java.util.*
 
 class EntityRenderer(val shader: ShaderProgram) : LinkedList<Entity>() {
     
-    fun draw(camera: Camera, pointLights: List<PointLight>, skybox: TextureSkybox = TextureLoader.NULL_TEXTURE_SKYBOX) {
+    fun draw(camera: Camera, display: Display, pointLights: List<PointLight> = arrayListOf<PointLight>(), skybox: TextureSkybox = TextureLoader.NULL_TEXTURE_SKYBOX) {
         
         shader.start()
-        shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB())
+        shader.loadMatrix4f("projectionMatrix", camera.getProjectionMatrixFB(display.ratio()))
         shader.loadMatrix4f("viewMatrix", camera.getViewMatrixFB())
         shader.loadVector3f("cameraPos", camera.position)
         shader.loadFloat("ambientLight", 0.3f)

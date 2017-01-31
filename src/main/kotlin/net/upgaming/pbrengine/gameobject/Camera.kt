@@ -1,7 +1,7 @@
 package net.upgaming.pbrengine.gameobject
 
 import net.upgaming.pbrengine.util.unaryMinus
-import net.upgaming.pbrgame.PBRGame
+import net.upgaming.pbrengine.window.Input
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -19,32 +19,32 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
     private val sensitivity = 0.002f
     private val speed = 1f
 
-    fun update(delta: Float) {
+    fun update(delta: Float, input: Input) {
         
         val change = Vector3f()
         
-        if(PBRGame.isKeyDown(GLFW_KEY_W)) {
+        if(input.isKeyDown(GLFW_KEY_W)) {
             change.add(frontVector())
         }
-        if(PBRGame.isKeyDown(GLFW_KEY_S)) {
+        if(input.isKeyDown(GLFW_KEY_S)) {
             change.add(backVector())
         }
-        if(PBRGame.isKeyDown(GLFW_KEY_A)) {
+        if(input.isKeyDown(GLFW_KEY_A)) {
             change.add(leftVector())
         }
-        if(PBRGame.isKeyDown(GLFW_KEY_D)) {
+        if(input.isKeyDown(GLFW_KEY_D)) {
             change.add(rightVector())
         }
-        if(PBRGame.isKeyDown(GLFW_KEY_SPACE)) {
+        if(input.isKeyDown(GLFW_KEY_SPACE)) {
             change.add(Vector3f(0f, 1f, 0f))
         }
-        if(PBRGame.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+        if(input.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
             change.add(Vector3f(0f, -1f, 0f))
         }
         
         position.add(change.mul(delta * speed))
         
-        rotation.add(-PBRGame.getMouseDY().toFloat() * sensitivity, -PBRGame.getMouseDX().toFloat() * sensitivity, 0f)
+        rotation.add(-input.getMouseDY().toFloat() * sensitivity, -input.getMouseDX().toFloat() * sensitivity, 0f)
         
     }
     
@@ -92,17 +92,17 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
         return vMatBuffer
     }
     
-    fun getProjectionMatrix(): Matrix4f {
+    fun getProjectionMatrix(aspectRatio: Float): Matrix4f {
         return Matrix4f().setPerspective(
                 Math.toRadians(fov.toDouble()).toFloat(),
-                PBRGame.display.width / PBRGame.display.height.toFloat(),
+                aspectRatio,
                 0.1f, 1000f
         )
     }
     
-    fun getProjectionMatrixFB(): FloatBuffer {
+    fun getProjectionMatrixFB(aspectRatio: Float): FloatBuffer {
         pMatBuffer.clear()
-        val matrix = getProjectionMatrix()
+        val matrix = getProjectionMatrix(aspectRatio)
         matrix.get(pMatBuffer)
         return pMatBuffer
     }

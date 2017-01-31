@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL20.*
 import java.io.File
 import java.nio.FloatBuffer
 import java.nio.file.Files
+import java.util.stream.Collectors
 
 class ShaderProgram(private val program: Int) {
     
@@ -44,8 +45,11 @@ class ShaderProgram(private val program: Int) {
     companion object {
         
         fun load(name: String): ShaderProgram {
-            val vsrc = Files.readAllLines(File("res/shaders/$name.v.glsl").toPath()).joinToString("\n")
-            val fsrc = Files.readAllLines(File("res/shaders/$name.f.glsl").toPath()).joinToString("\n")
+            val vsrc = ClassLoader.getSystemClassLoader().getResourceAsStream("shaders/$name.v.glsl")
+                    .bufferedReader().lines().collect(Collectors.toList()).joinToString("\n")
+            val fsrc = ClassLoader.getSystemClassLoader().getResourceAsStream("shaders/$name.f.glsl")
+                    .bufferedReader().lines().collect(Collectors.toList()).joinToString("\n")
+
             return load(vsrc, fsrc)
         }
         

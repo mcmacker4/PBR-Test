@@ -65,7 +65,4 @@ open class Application(width: Int, height: Int, title: String = "PBR Engine") {
     fun isKeyDown(glfwKey: Int) = display.isKeyDown(glfwKey)
     fun isBtnDown(glfwBtn: Int) = display.isBtnDown(glfwBtn)
     
-    fun getMouseDX(): Int = display.mouseDX
-    fun getMouseDY(): Int = display.mouseDY
-    
 }

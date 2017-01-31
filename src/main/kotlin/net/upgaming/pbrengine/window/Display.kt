@@ -57,7 +57,7 @@ class Display(var width: Int, var height: Int, title: String) {
         
         glClearColor(0f, 0f, 0f, 1f)
         glEnable(GL_DEPTH_TEST)
-        
+
     }
     
     fun update() {
@@ -97,5 +97,7 @@ class Display(var width: Int, var height: Int, title: String) {
     fun destroy() {
         glfwDestroyWindow(window)
     }
+
+    fun  ratio() = width / height.toFloat()
 
 }
